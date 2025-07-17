@@ -1,0 +1,50 @@
+
+save_loc: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/echo/"
+
+data:
+  data_path: "/glade/derecho/scratch/mhayman/aerosol/datasets/"  
+  data_file: "hippo_aerosol_training_data.nc"
+  wavelength_inputs:
+    backscatter_coefficient:
+      wavelength_lst: [1064.0e-9, 532.0e-9, 355.0e-9]
+    extinction_coefficient:
+      wavelength_lst: [1064.0e-9, 532.0e-9, 355.0e-9]
+  input_cols: []
+  output_cols: ['number_concentration', 'mean_r']
+  train_fraction: 0.8
+  valid_fraction: 0.1
+  test_fraction: 0.1
+  batch_size: 256
+  cond_args:
+    in_norm_arr: 1
+    in_bias_arr: 0
+    out_norm_arr: 1
+    out_bias_arr: 0
+
+model:
+  dtype: 'float64'
+  layer_count: 4
+  layer_nodes: 512
+  # layer_lst: [512, 1024, 1024, 512]
+  polynomial_order_1: 40 # 21
+  polynomial_order_2: 40 # 21
+  int_count: 1000
+
+
+trainer:
+  batches_per_epoch: 512
+  valid_batches_per_epoch: 64
+  grad_accum_every: 1
+  amp: false
+  learning_rate: 1.0e-4
+  max_epochs: 1500
+  stopping_patience: 6
+  scheduler:
+    threshold: 1.0e-4
+    factor: 0.1
+    patience: 100
+    min_lr: 1.0e-8
+  
+
+
+
