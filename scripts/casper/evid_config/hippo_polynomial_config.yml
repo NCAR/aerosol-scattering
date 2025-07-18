@@ -9,14 +9,16 @@ data:
 
 model:
   layer_lst: [512, 1024, 1024, 512]
-  polynomial_order_1: 21
-  polynomial_order_2: 21
+  polynomial_order_1: 32 # 21
+  polynomial_order_2: 32 # 21
   int_count: 1000
 
 
 training:
   learning_rate: 1.0e-4
   max_epochs: 1500
+  scheduler:
+    threshold: 1e-3
   
 
 
