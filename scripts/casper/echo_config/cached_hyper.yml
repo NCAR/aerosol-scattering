@@ -2,7 +2,7 @@ log: True
 save_path: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/echo"
 
 pbs:
-  jobs: 1
+  jobs: 10
   tasks_per_worker: 1
   gpus_per_node: 1
   bash: [
@@ -10,7 +10,7 @@ pbs:
       "conda activate holodec"
         ]
   batch:
-    N: "echo-holo"
+    N: "echo-polynn"
     l: ["select=1:ncpus=8:ngpus=1:mem=128GB", "walltime=12:00:00", "gpu_type=v100"]
     A: "NEOL0007" # HOLODEC allocation "NAIML0011"# "NEOL0007"
     q: "casper"
@@ -53,7 +53,7 @@ optuna:
       settings:
         name: "layer_count"
         low: 0
-        high: 6
+        high: 4
     model:layer_nodes:
       type: "int" 
       settings:
