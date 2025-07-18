@@ -8,6 +8,7 @@ from torch.utils.data import Dataset
 import datetime
 import yaml
 import os
+import copy
 
 class rescale:
     def __init__(self,min_value,max_value,axes=None,nobias=False):
@@ -374,3 +375,128 @@ class PolyPDF_dense_net(nn.Module):
         loss = self.fpdf_nll(fit_coef,y)
 
         return torch.sum(loss)
+    
+
+def save_poly_nn_model(model,path=None,
+                          x_scaler=None,
+                          y_scaler=None,
+                          conf=None,
+                          input_str_lst=None,
+                          output_str_lst=None,
+                          initial_model="None",
+                          name_str="",
+                          ):
+    """
+    saves the model state for 
+    polynomial fitting dense net.  The state is saved
+    to a .pt file while the model config
+    is saved to a yaml
+    """
+    time_str = datetime.datetime.now().strftime('%Y%m%dT%H%M%S')
+    
+    save_yaml_file = "_".join([name_str,time_str])+"_poly_nn_model_config.yaml"
+    save_model_file = "_".join([name_str,time_str])+"_model_state.pt"
+    
+    if path is None:
+        path = os.path.abspath(__file__+'/../../models/')
+    save_dct = copy.deepcopy(conf)
+    save_dct['save_model'] = {}
+    save_dct['save_model']['output_channels'] = model.output_channels
+    save_dct['save_model']['input_channels'] = model.input_channels
+    save_dct['layer_lst'] = model.layer_lst
+    save_dct['save_model']['initial_model'] = initial_model  # the pre-trained model version used to train this one
+
+    if input_str_lst is not None:
+        save_dct['save_model']['input_str_lst'] = input_str_lst
+
+    if output_str_lst is not None:
+        save_dct['save_model']['output_str_lst'] = output_str_lst
+
+
+    save_dct['save_model']['x_scaler'] = {}
+    if x_scaler is None:
+        save_dct['save_model']['x_scaler']['gain'] = [1,]
+        save_dct['save_model']['x_scaler']['bias'] = [0,]
+        save_dct['save_model']['x_scaler']['min_value'] = 0
+        save_dct['save_model']['x_scaler']['max_value'] = 1
+        save_dct['save_model']['x_scaler']['nobias'] = False
+    else:
+        if isinstance(x_scaler.gain,np.ndarray):
+            save_dct['save_model']['x_scaler']['gain'] = x_scaler.gain.tolist()
+        else:
+            save_dct['save_model']['x_scaler']['gain'] = [x_scaler.gain,]
+        if isinstance(x_scaler.bias,np.ndarray):
+            save_dct['save_model']['x_scaler']['bias'] = x_scaler.bias.tolist()
+        else:
+            save_dct['save_model']['x_scaler']['bias'] = [x_scaler.bias,]
+
+        save_dct['save_model']['x_scaler']['min_value'] = x_scaler.min_value
+        save_dct['save_model']['x_scaler']['max_value'] = x_scaler.max_value
+        save_dct['save_model']['x_scaler']['nobias'] = x_scaler.nobias
+
+    save_dct['save_model']['y_scaler'] = {}
+    if y_scaler is None:
+        save_dct['save_model']['y_scaler']['gain'] = [1,]
+        save_dct['save_model']['y_scaler']['bias'] = [0,]
+        save_dct['save_model']['y_scaler']['min_value'] = 0
+        save_dct['save_model']['y_scaler']['max_value'] = 1
+        save_dct['save_model']['y_scaler']['nobias'] = False
+    else:
+        if isinstance(y_scaler.gain,np.ndarray):
+            save_dct['save_model']['y_scaler']['gain'] = y_scaler.gain.tolist()
+        else:
+            save_dct['save_model']['y_scaler']['gain'] = [y_scaler.gain,]
+        if isinstance(y_scaler.bias,np.ndarray):
+            save_dct['save_model']['y_scaler']['bias'] = y_scaler.bias.tolist()  # this should always be zero
+        else:
+            save_dct['save_model']['y_scaler']['bias'] = [y_scaler.bias,]
+        save_dct['save_model']['y_scaler']['min_value'] = y_scaler.min_value
+        save_dct['save_model']['y_scaler']['max_value'] = y_scaler.max_value
+        save_dct['save_model']['y_scaler']['nobias'] = y_scaler.nobias
+    
+    
+    # save configuration information
+    with open(os.path.join(path,save_yaml_file), 'w') as outfile:
+        yaml.dump(save_dct, outfile, sort_keys=False)
+        
+    print("saving "+save_model_file+" to")
+    print(path)
+    # save the model state
+    torch.save(model.state_dict(), os.path.join(path,save_model_file))
+    print("done")
+
+def load_poly_nn_model(time_str,name_str="",path=None,dtype=None,device=None):
+    
+    if path is None:
+        path = os.path.abspath(__file__+'/../../models/')
+
+    if device is None:
+        device = torch.device("cpu")
+
+    if dtype is None:
+        dtype = torch.float
+
+    print("loading model from ")
+    print(path)
+
+    save_yaml_file = "_".join([name_str,time_str])+"_poly_nn_model_config.yaml"
+    save_model_file = "_".join([name_str,time_str])+"_model_state.pt"
+    
+    save_dct = {}
+    with open(os.path.join(path,save_yaml_file), "r") as r:
+        save_dct = yaml.safe_load(r)
+        
+    layer_lst = [save_dct['model']['layer_nodes'],]*save_dct['model']['layer_count']
+    polynomial_order = [save_dct['model']['polynomial_order_1'], save_dct['model']['polynomial_order_2']]
+    # I have skipped dealing with activation functions for now
+    # TODO activations need to be implemented
+    model = PolyPDF_dense_net(input_channels=save_dct['save_model']['input_channels'],
+                                layer_lst=layer_lst,
+                                output_channels=save_dct['save_model']['output_channels'],
+                                polynomial_order=polynomial_order,
+                                dtype=dtype,device=device,
+                                int_count=save_dct['model']['int_count'])
+    
+    model.load_state_dict(torch.load(os.path.join(path,save_model_file)))
+    model.eval()
+    return save_dct, model
