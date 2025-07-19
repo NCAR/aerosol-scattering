@@ -1,5 +1,5 @@
 data:
-  batch_size: 254
+  batch_size: 256
   cond_args:
     in_bias_arr: 0
     in_norm_arr: 1
@@ -29,20 +29,20 @@ model:
   dtype: float64
   int_count: 1000
   layer_count: 4
-  layer_nodes: 883
-  polynomial_order_1: 11
-  polynomial_order_2: 32
+  layer_nodes: 678
+  polynomial_order_1: 39
+  polynomial_order_2: 18
 save_loc: /glade/derecho/scratch/mhayman/aerosol_poly_nn/echo/
 trainer:
   amp: false
   batches_per_epoch: 512
   grad_accum_every: 1
-  learning_rate: 0.000955659052736885
+  learning_rate: 0.00020465231777295527
   max_epochs: 1500
   scheduler:
     factor: 0.1
     min_lr: 1.0e-08
     patience: 100
-    threshold: 0.002390358943056185
+    threshold: 1.9340971656200894e-05
   stopping_patience: 6
   valid_batches_per_epoch: 64
