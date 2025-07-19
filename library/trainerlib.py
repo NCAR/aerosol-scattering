@@ -417,8 +417,8 @@ class Trainer:
             # Stop training if we have not improved after X epochs (stopping patience)
             best_epoch = [
                 i
-                for i, j in enumerate(results_dict["train_loss"])
-                if j == min(results_dict["train_loss"])
+                for i, j in enumerate(results_dict["valid_loss"])
+                if j == min(results_dict["valid_loss"])
             ][0]
             offset = epoch - best_epoch
             if offset >= conf['trainer']['stopping_patience']:
@@ -427,7 +427,7 @@ class Trainer:
                 break
 
         best_epoch = [
-            i for i, j in enumerate(results_dict["train_loss"]) if j == min(results_dict["train_loss"])
+            i for i, j in enumerate(results_dict["valid_loss"]) if j == min(results_dict["valid_loss"])
         ][0]
 
         result = {k: v[best_epoch] for k, v in results_dict.items()}
