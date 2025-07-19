@@ -164,13 +164,13 @@ def trainer(rank, conf, trial=False):
         for var in conf['data']['wavelength_inputs']:
             for wl in conf['data']['wavelength_inputs'][var]['wavelength_lst']:
                 input_lst.append(transpose_and_flatten_data_array(valid_ds[var].sel(wavelength=wl)))
-                input_str_lst.append(var+f"_{int(wl*1e9)}")
+                # input_str_lst.append(var+f"_{int(wl*1e9)}")
         for var in conf['data']['input_cols']:
             input_lst.append(transpose_and_flatten_data_array(valid_ds[var],flattened_dim_name='input_vars'))
             # input_str_lst.append(var)
 
         # train_input_arr = xr.concat(input_lst,'input_vars')
-        train_input_arr = xr.concat(input_lst,pd.Index(input_str_lst,name='input_vars'))
+        valid_input_arr = xr.concat(input_lst,pd.Index(input_str_lst,name='input_vars'))
 
         output_lst = []
         # output_str_lst = []
@@ -181,13 +181,13 @@ def trainer(rank, conf, trial=False):
         valid_label_arr = xr.concat(output_lst,pd.Index(conf['data']['output_cols'],name='label_vars'))
         
         x_train = x_scaler.scale(np.log(train_input_arr.values))
-        x_valid = x_scaler.scale(np.log(valid_label_arr.values))
+        x_valid = x_scaler.scale(np.log(valid_input_arr.values))
         
         y_train = y_scaler.scale(np.log(train_label_arr.values))
         y_valid = y_scaler.scale(np.log(valid_label_arr.values))
     except Exception as E:
-        print("validation dataset encountered an error:")
-        print(str(E))
+        logging.warning(f"validation dataset encountered an error: {str(E)}")
+        logging.warning("Splitting the training data to obtain validation data")
         x_train = x_scaler.scale(np.log(train_input_arr.values[:train_idx,:]))
         x_valid = x_scaler.scale(np.log(train_input_arr.values[train_idx:valid_idx,:]))
         
