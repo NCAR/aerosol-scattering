@@ -148,14 +148,66 @@ def trainer(rank, conf, trial=False):
     x_scaler.set_scale(np.log(train_input_arr.values))
     y_scaler.set_scale(np.log(train_label_arr.values))
 
-    x_train = x_scaler.scale(np.log(train_input_arr.values[:train_idx,:]))
-    x_valid = x_scaler.scale(np.log(train_input_arr.values[train_idx:valid_idx,:]))
-    x_test = x_scaler.scale(np.log(train_input_arr.values[valid_idx:,:]))
+    # x_train = x_scaler.scale(np.log(train_input_arr.values[:train_idx,:]))
+    # x_valid = x_scaler.scale(np.log(train_input_arr.values[train_idx:valid_idx,:]))
+    # x_test = x_scaler.scale(np.log(train_input_arr.values[valid_idx:,:]))
 
 
-    y_train = y_scaler.scale(np.log(train_label_arr.values[:train_idx,:]))
-    y_valid = y_scaler.scale(np.log(train_label_arr.values[train_idx:valid_idx,:]))
-    y_test = y_scaler.scale(np.log(train_label_arr.values[valid_idx:,:]))
+    # y_train = y_scaler.scale(np.log(train_label_arr.values[:train_idx,:]))
+    # y_valid = y_scaler.scale(np.log(train_label_arr.values[train_idx:valid_idx,:]))
+    # y_test = y_scaler.scale(np.log(train_label_arr.values[valid_idx:,:]))
+
+    try:
+        valid_ds = xr.open_dataset(os.path.join(conf['data']['valid_data_path'],conf['data']['valid_data_file']))
+        input_lst = []
+        # input_str_lst = []
+        for var in conf['data']['wavelength_inputs']:
+            for wl in conf['data']['wavelength_inputs'][var]['wavelength_lst']:
+                input_lst.append(transpose_and_flatten_data_array(valid_ds[var].sel(wavelength=wl)))
+                input_str_lst.append(var+f"_{int(wl*1e9)}")
+        for var in conf['data']['input_cols']:
+            input_lst.append(transpose_and_flatten_data_array(valid_ds[var],flattened_dim_name='input_vars'))
+            # input_str_lst.append(var)
+
+        # train_input_arr = xr.concat(input_lst,'input_vars')
+        train_input_arr = xr.concat(input_lst,pd.Index(input_str_lst,name='input_vars'))
+
+        output_lst = []
+        # output_str_lst = []
+        for var in conf['data']['output_cols']:
+            output_lst.append(transpose_and_flatten_data_array(valid_ds[var],flattened_dim_name='label_vars'))
+            # output_str_lst.append(var)
+
+        valid_label_arr = xr.concat(output_lst,pd.Index(conf['data']['output_cols'],name='label_vars'))
+        
+        x_train = x_scaler.scale(np.log(train_input_arr.values))
+        x_valid = x_scaler.scale(np.log(valid_label_arr.values))
+        
+        y_train = y_scaler.scale(np.log(train_label_arr.values))
+        y_valid = y_scaler.scale(np.log(valid_label_arr.values))
+    except Exception as E:
+        print("validation dataset encountered an error:")
+        print(str(E))
+        x_train = x_scaler.scale(np.log(train_input_arr.values[:train_idx,:]))
+        x_valid = x_scaler.scale(np.log(train_input_arr.values[train_idx:valid_idx,:]))
+        
+        y_train = y_scaler.scale(np.log(train_label_arr.values[:train_idx,:]))
+        y_valid = y_scaler.scale(np.log(train_label_arr.values[train_idx:valid_idx,:]))
+
+    # x_scaler = evid_nn.rescale(0,1,axes=(0,))
+    # y_scaler = evid_nn.rescale(0,1,axes=(0,))
+
+    # x_scaler.set_scale(np.log(train_input_arr.values))
+    # y_scaler.set_scale(np.log(train_label_arr.values))
+
+    # x_train = x_scaler.scale(np.log(train_input_arr.values[:train_idx,:]))
+    # x_valid = x_scaler.scale(np.log(train_input_arr.values[train_idx:valid_idx,:]))
+    # x_test = x_scaler.scale(np.log(train_input_arr.values[valid_idx:,:]))
+
+
+    # y_train = y_scaler.scale(np.log(train_label_arr.values[:train_idx,:]))
+    # y_valid = y_scaler.scale(np.log(train_label_arr.values[train_idx:valid_idx,:]))
+    # y_test = y_scaler.scale(np.log(train_label_arr.values[valid_idx:,:]))
 
     # cond_args = {
     #     'in_norm_arr':1,
@@ -172,13 +224,13 @@ def trainer(rank, conf, trial=False):
     valid_dataset = evid_nn.EvidDataset(x_valid,y_valid,
                                 dtype=dtype,device=device,
                                 **cond_args)
-    test_dataset = evid_nn.EvidDataset(x_test,y_test,
-                                dtype=dtype,device=device,
-                                **cond_args)
+    # test_dataset = evid_nn.EvidDataset(x_test,y_test,
+    #                             dtype=dtype,device=device,
+    #                             **cond_args)
     
     train_dataloader = DataLoader(train_dataset, batch_size=train_batch_size, shuffle=True)
     valid_dataloader = DataLoader(valid_dataset, batch_size=valid_batch_size, shuffle=True)
-    test_dataloader = DataLoader(test_dataset, batch_size=test_batch_size, shuffle=False)
+    # test_dataloader = DataLoader(test_dataset, batch_size=test_batch_size, shuffle=False)
 
     # build the model
     # layer_lst = conf['model']['layer_lst'] # [128,512,512,]# [512,512,]

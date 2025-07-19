@@ -1,8 +1,8 @@
 log: True
-save_path: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/echo"
+save_path: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/valid_soc_echo"
 
 pbs:
-  jobs: 10
+  jobs: 15
   tasks_per_worker: 1
   gpus_per_node: 1
   bash: [
@@ -23,7 +23,7 @@ optuna:
   storage_type: "nfs"
   objective: "/glade/u/home/mhayman/Python/aerosol-scattering/scripts/casper/trainer_polynn.py"
   direction: "minimize"
-  metric: "train_loss"
+  metric: "valid_loss"
   n_trials: 1000
   gpu: True
   sampler:
@@ -46,14 +46,14 @@ optuna:
       type: "int" 
       settings:
         name: "batch_size"
-        low: 16
-        high: 256
+        low: 128
+        high: 512
     model:layer_count:
       type: "int" 
       settings:
         name: "layer_count"
-        low: 0
-        high: 4
+        low: 2
+        high: 6
     model:layer_nodes:
       type: "int" 
       settings:

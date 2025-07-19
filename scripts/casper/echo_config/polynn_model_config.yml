@@ -1,9 +1,11 @@
 
-save_loc: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/echo/"
+save_loc: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/valid_soc_echo/"
 
 data:
   data_path: "/glade/derecho/scratch/mhayman/aerosol/datasets/"  
   data_file: "hippo_aerosol_training_data.nc"
+  valid_data_path: "/glade/derecho/scratch/mhayman/aerosol/datasets/"
+  valid_data_file: "socrates_aerosol_training_data.nc"
   wavelength_inputs:
     backscatter_coefficient:
       wavelength_lst: [1064.0e-9, 532.0e-9, 355.0e-9]
@@ -11,9 +13,9 @@ data:
       wavelength_lst: [1064.0e-9, 532.0e-9, 355.0e-9]
   input_cols: []
   output_cols: ['number_concentration', 'mean_r']
-  train_fraction: 0.8
-  valid_fraction: 0.1
-  test_fraction: 0.1
+  train_fraction: 0.7
+  valid_fraction: 0.25
+  test_fraction: 0.05
   batch_size: 256
   cond_args:
     in_norm_arr: 1
