@@ -1,11 +1,13 @@
 
-save_loc: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/valid_soc_echo/"
+save_loc: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/valid_echo"
 
 data:
   data_path: "/glade/derecho/scratch/mhayman/aerosol/datasets/"  
-  data_file: "hippo_aerosol_training_data.nc"
+  data_file: "hippo_aerosol_training_data_train.nc"
   valid_data_path: "/glade/derecho/scratch/mhayman/aerosol/datasets/"
-  valid_data_file: "socrates_aerosol_training_data.nc"
+  valid_data_file: "hippo_aerosol_training_data_valid.nc"
+  test_data_path: "/glade/derecho/scratch/mhayman/aerosol/datasets/"
+  test_data_file: "hippo_aerosol_training_data_test.nc"
   wavelength_inputs:
     backscatter_coefficient:
       wavelength_lst: [1064.0e-9, 532.0e-9, 355.0e-9]
@@ -35,7 +37,7 @@ model:
 
 trainer:
   batches_per_epoch: 512
-  valid_batches_per_epoch: 64
+  valid_batches_per_epoch: 512
   grad_accum_every: 1
   amp: false
   learning_rate: 1.0e-4

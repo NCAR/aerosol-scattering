@@ -1,5 +1,5 @@
 log: True
-save_path: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/valid_soc_echo"
+save_path: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/valid_echo"
 
 pbs:
   jobs: 15
@@ -47,19 +47,19 @@ optuna:
       settings:
         name: "batch_size"
         low: 128
-        high: 512
+        high: 1024
     model:layer_count:
       type: "int" 
       settings:
         name: "layer_count"
         low: 2
-        high: 6
+        high: 12
     model:layer_nodes:
       type: "int" 
       settings:
         name: "layer_nodes"
-        low: 8
-        high: 1024    
+        low: 128
+        high: 4096    
     model:polynomial_order_1:
       type: "int" 
       settings:
