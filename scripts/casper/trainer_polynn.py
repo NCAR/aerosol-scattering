@@ -337,11 +337,11 @@ class Objective(BaseObjective):
                 )
                 # raise E
                 raise optuna.TrialPruned()
-            # elif "pooling" in str(E).lower():
-            #     logging.warning(
-            #         f"Pruning trial {trial.number} due to pooling error: {str(E)}."
-            #     )
-            #     raise optuna.TrialPruned()
+            elif "list index out of range" in str(E).lower():
+                logging.warning(
+                    f"Pruning trial {trial.number} due to list index error: {str(E)}."
+                )
+                raise optuna.TrialPruned()
             # elif "Groups" in str(E):
             #     logging.warning(
             #         f"Pruning trial {trial.number} due to groups error: {str(E)}."
