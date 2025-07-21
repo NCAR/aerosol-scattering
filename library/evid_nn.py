@@ -350,7 +350,11 @@ class PolyPDF_dense_net(nn.Module):
         """
         
         y_integral = torch.sum(torch.exp(fit_coef @ self.x_mesh_ch_poly.T),dim=1)*self.dx_int*self.dx_int
-        
+
+        # TODO check if trapazoidal integration works better
+        # y_int_1 = torch.trapz(torch.exp(fit_coef @ self.x_mesh_ch_poly.T).reshape(-1,self.int_count,self.int_count),x=self.x_int,dim=1)
+        # y_integral = torch.trapz(y_int_1,x=self.x_int,dim=2)
+
         return y_integral
     
     def forward_coef(self,input_data):
