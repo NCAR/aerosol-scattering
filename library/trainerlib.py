@@ -432,6 +432,10 @@ class Trainer:
 
         result = {k: v[best_epoch] for k, v in results_dict.items()}
 
+        # keep the results history as a property of the class so they can be accessed outside of
+        # the method
+        self.results_dict = results_dict
+
         # if conf["trainer"]["mode"] in ["fsdp", "ddp"]:
         #     cleanup()
 
