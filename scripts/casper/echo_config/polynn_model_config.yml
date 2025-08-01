@@ -1,5 +1,5 @@
 
-save_loc: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/valid_echo"
+save_loc: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/valid_echo_flt"
 
 data:
   data_path: "/glade/derecho/scratch/mhayman/aerosol/datasets/"  
@@ -41,12 +41,12 @@ trainer:
   grad_accum_every: 1
   amp: false
   learning_rate: 1.0e-4
-  max_epochs: 1500
-  stopping_patience: 6
+  max_epochs: 50
+  stopping_patience: 4
   scheduler:
     threshold: 1.0e-4
     factor: 0.1
-    patience: 100
+    patience: 2
     min_lr: 1.0e-8
   
 
