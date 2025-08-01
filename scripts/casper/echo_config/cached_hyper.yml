@@ -1,5 +1,5 @@
 log: True
-save_path: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/valid_echo"
+save_path: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/valid_echo_flt"
 
 pbs:
   jobs: 15
