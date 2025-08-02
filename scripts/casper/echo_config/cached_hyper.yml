@@ -1,8 +1,8 @@
 log: True
-save_path: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/valid_echo_flt"
+save_path: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/poly_lim_12"
 
 pbs:
-  jobs: 15
+  jobs: 6
   tasks_per_worker: 1
   gpus_per_node: 1
   bash: [
@@ -65,13 +65,13 @@ optuna:
       settings:
         name: "polynomial_order_1"
         low: 2
-        high: 40
+        high: 12
     model:polynomial_order_2:
       type: "int" 
       settings:
         name: "polynomial_order_2"
         low: 2
-        high: 40
+        high: 12
     # model:int_count:
     #   type: "int" 
     #   settings:

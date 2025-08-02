@@ -42,7 +42,7 @@ trainer:
   amp: false
   learning_rate: 1.0e-4
   max_epochs: 50
-  stopping_patience: 4
+  stopping_patience: 3
   scheduler:
     threshold: 1.0e-4
     factor: 0.1
