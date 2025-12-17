@@ -1,8 +1,9 @@
 log: True
-save_path: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/poly_lim_12"
+save_path: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/bs_ext_3wl_351/"
+notes: "process backscatter and extinction data at 355, 532 and 1064 nm"
 
 pbs:
-  jobs: 6
+  jobs: 15
   tasks_per_worker: 1
   gpus_per_node: 1
   bash: [
@@ -24,7 +25,7 @@ optuna:
   objective: "/glade/u/home/mhayman/Python/aerosol-scattering/scripts/casper/trainer_polynn.py"
   direction: "minimize"
   metric: "valid_loss"
-  n_trials: 1000
+  n_trials: 200
   gpu: True
   sampler:
     type: "TPESampler"
@@ -65,13 +66,13 @@ optuna:
       settings:
         name: "polynomial_order_1"
         low: 2
-        high: 12
+        high: 40
     model:polynomial_order_2:
       type: "int" 
       settings:
         name: "polynomial_order_2"
         low: 2
-        high: 12
+        high: 40
     # model:int_count:
     #   type: "int" 
     #   settings:

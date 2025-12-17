@@ -1,5 +1,5 @@
 
-save_loc: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/bs_ext_3wl_351/"
+save_loc: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/valid_echo_flt"
 
 data:
   data_path: "/glade/derecho/scratch/mhayman/aerosol/datasets/"  
@@ -10,9 +10,9 @@ data:
   test_data_file: "hippo_aerosol_training_data_test.nc"
   wavelength_inputs:
     backscatter_coefficient:
-      wavelength_lst: [1064.0e-9, 532.0e-9, 355.0e-9] # [1064.0e-9, 532.0e-9, 355.0e-9]
-    extinction_coefficient:
-      wavelength_lst: [1064.0e-9, 532.0e-9, 355.0e-9] # [1064.0e-9, 532.0e-9, 355.0e-9]
+      wavelength_lst: [1064.0e-9, 532.0e-9, 355.0e-9]
+    # extinction_coefficient:
+    #   wavelength_lst: [1064.0e-9, 532.0e-9, 355.0e-9]
   input_cols: []
   output_cols: ['number_concentration', 'mean_r']
   train_fraction: 0.7

@@ -1,0 +1,101 @@
+data:
+  batch_size: 1004
+  cond_args:
+    in_bias_arr: 0
+    in_norm_arr: 1
+    out_bias_arr: 0
+    out_norm_arr: 1
+  data_file: hippo_aerosol_training_data_train.nc
+  data_path: /glade/derecho/scratch/mhayman/aerosol/datasets/
+  input_cols: []
+  output_cols:
+  - number_concentration
+  - mean_r
+  test_data_file: hippo_aerosol_training_data_test.nc
+  test_data_path: /glade/derecho/scratch/mhayman/aerosol/datasets/
+  test_fraction: 0.05
+  train_fraction: 0.7
+  valid_data_file: hippo_aerosol_training_data_valid.nc
+  valid_data_path: /glade/derecho/scratch/mhayman/aerosol/datasets/
+  valid_fraction: 0.25
+  wavelength_inputs:
+    backscatter_coefficient:
+      wavelength_lst:
+      - 1.064e-06
+      - 5.32e-07
+      - 3.55e-07
+    extinction_coefficient:
+      wavelength_lst:
+      - 1.064e-06
+      - 5.32e-07
+      - 3.55e-07
+model:
+  dtype: float64
+  int_count: 1000
+  layer_count: 6
+  layer_nodes: 2459
+  polynomial_order_1: 14
+  polynomial_order_2: 13
+save_loc: /glade/derecho/scratch/mhayman/aerosol_poly_nn/training/
+trainer:
+  amp: false
+  batches_per_epoch: 512
+  grad_accum_every: 1
+  learning_rate: 0.000781651290659037
+  max_epochs: 13
+  scheduler:
+    factor: 0.1
+    min_lr: 1.0e-08
+    patience: 100
+    threshold: 0.0005018213866145383
+  stopping_patience: 6
+  valid_batches_per_epoch: 256
+save_model:
+  output_channels: 2
+  input_channels: 6
+  initial_model: None
+  input_str_lst:
+  - backscatter_coefficient_1064
+  - backscatter_coefficient_532
+  - backscatter_coefficient_355
+  - extinction_coefficient_1064
+  - extinction_coefficient_532
+  - extinction_coefficient_355
+  output_str_lst:
+  - number_concentration
+  - mean_r
+  x_scaler:
+    gain:
+    - - 18.804899483187523
+      - 17.396893567323282
+      - 16.7020303169123
+      - 20.92405115937369
+      - 18.919539302874163
+      - 17.495169518289146
+    bias:
+    - - -29.77590410187726
+      - -27.045632005235525
+      - -25.50520488401783
+      - -28.327781678971274
+      - -25.550025277056495
+      - -23.928921624225538
+    min_value: 0
+    max_value: 1
+    nobias: false
+  y_scaler:
+    gain:
+    - - 9.673531532287598
+      - 2.728151321411133
+    bias:
+    - - 0.26169300079345703
+      - -17.293643951416016
+    min_value: 0
+    max_value: 1
+    nobias: false
+layer_lst:
+- 2459
+- 2459
+- 2459
+- 2459
+- 2459
+- 2459

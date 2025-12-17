@@ -477,9 +477,6 @@ def load_poly_nn_model(time_str,name_str="",path=None,dtype=None,device=None):
     if device is None:
         device = torch.device("cpu")
 
-    if dtype is None:
-        dtype = torch.float
-
     print("loading model from ")
     print(path)
 
@@ -489,6 +486,14 @@ def load_poly_nn_model(time_str,name_str="",path=None,dtype=None,device=None):
     save_dct = {}
     with open(os.path.join(path,save_yaml_file), "r") as r:
         save_dct = yaml.safe_load(r)
+
+    if dtype is None:
+        if save_dct['model']['dtype'] == 'float64':
+            dtype = torch.float64
+        elif save_dct['model']['dtype'] == 'float32':
+            dtype = torch.float32
+        else:
+            dtype = torch.float
         
     layer_lst = [save_dct['model']['layer_nodes'],]*save_dct['model']['layer_count']
     polynomial_order = [save_dct['model']['polynomial_order_1'], save_dct['model']['polynomial_order_2']]

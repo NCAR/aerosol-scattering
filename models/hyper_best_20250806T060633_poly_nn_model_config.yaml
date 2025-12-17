@@ -1,0 +1,85 @@
+data:
+  batch_size: 1023
+  cond_args:
+    in_bias_arr: 0
+    in_norm_arr: 1
+    out_bias_arr: 0
+    out_norm_arr: 1
+  data_file: hippo_aerosol_training_data_train.nc
+  data_path: /glade/derecho/scratch/mhayman/aerosol/datasets/
+  input_cols: []
+  output_cols:
+  - number_concentration
+  - mean_r
+  test_data_file: hippo_aerosol_training_data_test.nc
+  test_data_path: /glade/derecho/scratch/mhayman/aerosol/datasets/
+  test_fraction: 0.05
+  train_fraction: 0.7
+  valid_data_file: hippo_aerosol_training_data_valid.nc
+  valid_data_path: /glade/derecho/scratch/mhayman/aerosol/datasets/
+  valid_fraction: 0.25
+  wavelength_inputs:
+    backscatter_coefficient:
+      wavelength_lst:
+      - 1.064e-06
+    extinction_coefficient:
+      wavelength_lst:
+      - 1.064e-06
+model:
+  dtype: float64
+  int_count: 1000
+  layer_count: 6
+  layer_nodes: 3851
+  polynomial_order_1: 16
+  polynomial_order_2: 32
+save_loc: /glade/derecho/scratch/mhayman/aerosol_poly_nn/training/
+trainer:
+  amp: false
+  batches_per_epoch: 512
+  grad_accum_every: 1
+  learning_rate: 0.00053393851156826
+  max_epochs: 50
+  scheduler:
+    factor: 0.1
+    min_lr: 1.0e-08
+    patience: 2
+    threshold: 1.03283657857311e-05
+  stopping_patience: 3
+  valid_batches_per_epoch: 256
+save_model:
+  output_channels: 2
+  input_channels: 2
+  initial_model: None
+  input_str_lst:
+  - backscatter_coefficient_1064
+  - extinction_coefficient_1064
+  output_str_lst:
+  - number_concentration
+  - mean_r
+  x_scaler:
+    gain:
+    - - 18.804899483187523
+      - 20.92405115937369
+    bias:
+    - - -29.77590410187726
+      - -28.327781678971274
+    min_value: 0
+    max_value: 1
+    nobias: false
+  y_scaler:
+    gain:
+    - - 9.673531532287598
+      - 2.728151321411133
+    bias:
+    - - 0.26169300079345703
+      - -17.293643951416016
+    min_value: 0
+    max_value: 1
+    nobias: false
+layer_lst:
+- 3851
+- 3851
+- 3851
+- 3851
+- 3851
+- 3851
