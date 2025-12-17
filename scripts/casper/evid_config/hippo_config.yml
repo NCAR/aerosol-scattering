@@ -1,0 +1,16 @@
+
+data:
+  input_cols: ['backscatter_coefficient', 'extinction_coefficient']
+  output_cols: ['number_concentration', 'mean_r']
+  train_fraction: 0.45
+  valid_fraction: 0.45
+  test_fraction: 0.1
+
+model:
+  batch_size: 256
+
+training:
+  learning_rate: 1.0e-4
+  max_epochs: 1500
+  reg_coef: 0.1e+1
+
