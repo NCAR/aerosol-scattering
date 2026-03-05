@@ -1,18 +1,18 @@
 log: True
-save_path: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/bs_ext_3wl_351/"
-notes: "process backscatter and extinction data at 355, 532 and 1064 nm"
+save_path: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/beta6_alpha2_r_eff_13_02/"
+notes: "6 backscatter, 2 extinction with effective radius and number density estimates.  index of refraction 1.3+0.02i"
 
 pbs:
-  jobs: 15
+  jobs: 8
   tasks_per_worker: 1
-  gpus_per_node: 1
+  # gpus_per_node: 1
   bash: [
       "module load conda",
       "conda activate holodec"
         ]
   batch:
     N: "echo-polynn"
-    l: ["select=1:ncpus=8:ngpus=1:mem=128GB", "walltime=12:00:00", "gpu_type=v100"]
+    l: ["select=1:ncpus=8:ngpus=1:mem=128GB:gpu_type=v100", "walltime=12:00:00"]
     A: "NEOL0007" # HOLODEC allocation "NAIML0011"# "NEOL0007"
     q: "casper"
     o: "out"

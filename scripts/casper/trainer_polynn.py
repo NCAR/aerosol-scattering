@@ -124,8 +124,16 @@ def trainer(rank, conf, trial=False):
     input_lst = []
     input_str_lst = []
     for var in conf['data']['wavelength_inputs']:
-        for wl in conf['data']['wavelength_inputs'][var]['wavelength_lst']:
-            input_lst.append(transpose_and_flatten_data_array(ds[var].sel(wavelength=wl)))
+        for wl_idx, wl in enumerate(conf['data']['wavelength_inputs'][var]['wavelength_lst']):
+            data_idx_dct = {'wavelength':wl,}
+            if 'real_index_lst' in conf['data']['wavelength_inputs'][var]:
+                data_idx_dct['real_index_refraction'] = conf['data']['wavelength_inputs'][var]['real_index_lst'][wl_idx]
+            if 'imag_index_lst' in conf['data']['wavelength_inputs'][var]:
+                data_idx_dct['imag_index_refraction'] = conf['data']['wavelength_inputs'][var]['imag_index_lst'][wl_idx]
+            # data_idx_dct['method'] = 'nearest'
+            # print(data_idx_dct)
+            input_lst.append(transpose_and_flatten_data_array(ds[var].sel(indexers=data_idx_dct)))
+            # input_lst.append(transpose_and_flatten_data_array(ds[var].sel(**data_idx_dct)))
             input_str_lst.append(var+f"_{int(wl*1e9)}")
     for var in conf['data']['input_cols']:
         input_lst.append(transpose_and_flatten_data_array(ds[var],flattened_dim_name='input_vars'))
@@ -162,8 +170,16 @@ def trainer(rank, conf, trial=False):
         input_lst = []
         # input_str_lst = []
         for var in conf['data']['wavelength_inputs']:
-            for wl in conf['data']['wavelength_inputs'][var]['wavelength_lst']:
-                input_lst.append(transpose_and_flatten_data_array(valid_ds[var].sel(wavelength=wl)))
+            for wl_idx, wl in enumerate(conf['data']['wavelength_inputs'][var]['wavelength_lst']):
+                data_idx_dct = {'wavelength':wl}
+                if 'real_index_lst' in conf['data']['wavelength_inputs'][var]:
+                    data_idx_dct['real_index_refraction'] = conf['data']['wavelength_inputs'][var]['real_index_lst'][wl_idx]
+                if 'imag_index_lst' in conf['data']['wavelength_inputs'][var]:
+                    data_idx_dct['imag_index_refraction'] = conf['data']['wavelength_inputs'][var]['imag_index_lst'][wl_idx]
+                # print(data_idx_dct)
+                # data_idx_dct['method'] = 'nearest'
+                input_lst.append(transpose_and_flatten_data_array(valid_ds[var].sel(indexers=data_idx_dct)))
+                # input_lst.append(transpose_and_flatten_data_array(valid_ds[var].sel(**data_idx_dct)))
                 # input_str_lst.append(var+f"_{int(wl*1e9)}")
         for var in conf['data']['input_cols']:
             input_lst.append(transpose_and_flatten_data_array(valid_ds[var],flattened_dim_name='input_vars'))
