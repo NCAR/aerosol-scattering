@@ -11,4 +11,4 @@ echo-opt scripts/casper/echo_config/cached_hyper.yml scripts/casper/echo_config/
 # get report and best model
 # echo-report scripts/casper/echo_config/cached_hyper.yml -m scripts/casper/echo_config/polynn_model_config.yml 
 
-# cp best.yml ~/Python/aerosol-scattering/config/echo/best_beta6_alpha2_r_eff_13_02.yml
+# cp best.yml ~/Python/aerosol-scattering/config/echo/best_beta3_alpha2_r_eff_13_02.yml

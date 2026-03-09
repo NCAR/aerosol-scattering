@@ -1,6 +1,6 @@
 log: True
-save_path: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/beta6_alpha2_r_eff_13_02/"
-notes: "6 backscatter, 2 extinction with effective radius and number density estimates.  index of refraction 1.3+0.02i"
+save_path: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/beta3_alpha2_r_eff_15_02/"
+notes: "3 backscatter, 2 extinction with effective radius and number density estimates.  index of refraction 1.5+0.02i"
 
 pbs:
   jobs: 8
