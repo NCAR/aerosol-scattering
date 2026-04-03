@@ -1,6 +1,6 @@
 log: True
-save_path: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/beta3_alpha2_r_eff_all_index/"
-notes: "3 backscatter, 2 extinction with effective radius and number density estimates.  Data has index of refraction ranging from [1.3-1.5]+i[0-0.6]"
+save_path: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/beta1_alpha1_532_r_eff_all_index/"
+notes: "532 nm backscatter and extinction with effective radius and number density estimates.  Data has index of refraction ranging from [1.3-1.5]+i[0-0.6]"
 
 pbs:
   jobs: 12

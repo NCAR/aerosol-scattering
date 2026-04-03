@@ -1,5 +1,5 @@
 
-save_loc: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/beta3_alpha2_r_eff_all_index/"
+save_loc: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/beta1_alpha1_532_r_eff_all_index/"
 
 data:
   data_path: "/glade/derecho/scratch/mhayman/aerosol/datasets/"  
@@ -14,11 +14,11 @@ data:
   flatten_to_multiple_points: ['real_index_refraction','imag_index_refraction',]
   wavelength_inputs:
     backscatter_coefficient:
-      wavelength_lst: [1064.0e-9, 532.0e-9, 355.0e-9,] # [1064.0e-9, 710.0e-9, 800.0e-9, 532.0e-9, 400.0e-9, 355.0e-9,]
+      wavelength_lst: [355.0e-9, 532.0e-9,] # [1064.0e-9, 710.0e-9, 800.0e-9, 532.0e-9, 400.0e-9, 355.0e-9,]
       # real_index_lst: [1.5, 1.5, 1.5,]
       # imag_index_lst: [0.02, 0.02, 0.02,]
     extinction_coefficient:
-      wavelength_lst: [532.0e-9, 355.0e-9] # [1064.0e-9, 532.0e-9, 355.0e-9]
+      wavelength_lst: [355.0e-9, 532.0e-9] # [1064.0e-9, 532.0e-9, 355.0e-9]
       # real_index_lst: [1.5, 1.5,]
       # imag_index_lst: [0.02, 0.02,]
 
