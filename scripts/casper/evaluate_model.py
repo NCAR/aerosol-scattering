@@ -16,6 +16,7 @@ import pandas as pd
 import numpy as np
 import xarray as xr
 import matplotlib.pyplot as plt
+import datetime
 
 from scipy.special import gamma, gammaln
 
@@ -54,6 +55,7 @@ if is_cuda:
 
 print(f'Preparing to use device {device}')
 
+current_time_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
 def batched_interpolation_with_batched_x(
@@ -334,8 +336,9 @@ for m_idx, model_str in enumerate(model_str_lst):
     hist_in_data = np.concatenate([x_train,x_valid,x_test],axis=0)
     hist_out_label = np.concatenate([y_train,y_valid,y_test],axis=0)
 
-    in_data = hist_in_data
-    out_label = hist_out_label
+    sample_interval = 20
+    in_data = hist_in_data[::sample_interval,...]
+    out_label = hist_out_label[::sample_interval,...]
 
     # # data for histogram analysis
     # hist_in_data = np.concatenate([x_train,x_valid,x_test],axis=0)
@@ -408,8 +411,8 @@ for m_idx, model_str in enumerate(model_str_lst):
     ### perform aggregate analysis ###
 
     batch_size = 256
-    ensemble_size = 5
-    ensemble_width = 0.01 # (observation uncertainty)
+    ensemble_size = 25
+    ensemble_width = 0.10 # (observation uncertainty in fraction.  e.g. 0.05 is 5% error)
     batch_count = in_data.shape[0]//batch_size # hardcoded for testing
     
     r_centroid_lst = []
@@ -433,7 +436,7 @@ for m_idx, model_str in enumerate(model_str_lst):
     n2_ens_centroid_lst = []
     
     with torch.no_grad():
-        for batch in tqdm.tqdm(range(batch_count)):
+        for batch in tqdm.tqdm(range(batch_count),miniters=100):
             input_batch = torch.tensor(in_data[batch*batch_size:((batch+1)*batch_size),:], dtype=dtype, device=device)
             
             f_pdf_tnsr = model_reload.output_pdf(input_batch)
@@ -460,7 +463,7 @@ for m_idx, model_str in enumerate(model_str_lst):
 
             # for ensemble analysis (which will slow things down
             # ensemble_size = 100
-            ensemble_width = 0.05 # (observation uncertainty in fraction.  e.g. 0.05 is 5% error)
+            # ensemble_width = 0.05 # (observation uncertainty in fraction.  e.g. 0.05 is 5% error)
             hist_width_arr = torch.tensor(np.log10(1+ensemble_width)/x_scaler.gain,dtype=dtype,device=device)
             # loop_length = 4
             # f_pdf_ens = np.zeros((f_pdf_tnsr.shape[1],f_pdf_tnsr.shape[2]))
@@ -505,11 +508,13 @@ for m_idx, model_str in enumerate(model_str_lst):
         r_ens_interval_arr_lst.append(np.concatenate(r_ens_interval_lst,axis=0))
         n_ens_interval_arr_lst.append(np.concatenate(n_ens_interval_lst,axis=0))
 
-    save_output_file_name = "full_aggregate_analysis_"+model_str+".nc"
+    save_output_file_name = "full_aggregate_analysis_"+model_str+f"_{int(100*ensemble_width)}error.nc"
     save_aggr_ds = xr.Dataset({},attrs=nc_attrs)
     save_aggr_ds.attrs['ensemble_width'] = ensemble_width
     save_aggr_ds.attrs['ensemble_size'] = ensemble_size
     save_aggr_ds.attrs['model'] = model_str
+    save_aggr_ds.attrs['sample_interval']= sample_interval
+    save_aggr_ds.attrs['file_creation_date'] = current_time_str
 
     save_aggr_ds['r_centroid'] = xr.DataArray(r_centroid_arr_lst[-1],dims=('data_index',),
                                               attrs={'description':'centroid of effective radius of PDF'})
