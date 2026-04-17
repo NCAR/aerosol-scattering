@@ -162,3 +162,5 @@ cython_debug/
 
 # don't track models because they are too big
 /models/*.pt
+
+*.o*
