@@ -1,0 +1,29 @@
+#!/bin/bash -l
+### Job Name
+#PBS -N eval_holodec
+### Project code
+#PBS -A NEOL0007
+#PBS -l walltime=12:00:00
+#PBS -q casper
+### Merge output and error files
+#PBS -j oe
+### Select 1 node with 1 CPU and a v100 GPU
+#PBS -l select=4:ngpus=1:mem=128GB:gpu_type=v100
+### Specify mail recipient
+### PBS -M mhayman@ucar.edu
+        
+export TMPDIR=/glade/derecho/scratch/$USER/tmp
+mkdir -p $TMPDIR
+
+daystr=`date +%Y%m%dT%H%M%S`
+echo $daystr
+
+module load conda
+conda activate holodec 
+
+echo $HOSTNAME
+
+cd $HOME/Python/aerosol-scattering/scripts/casper/
+
+### Run the executable
+python -u evaluate_model.py

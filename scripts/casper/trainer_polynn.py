@@ -28,70 +28,71 @@ import evid_nn
 # import loss as losslib
 # import polynomial as p
 from trainerlib import Trainer
+import data
 
-def transpose_and_flatten_data_array(da: xr.DataArray,flattened_dim_name:str = None) -> xr.DataArray:
-    """
-    Transposes an xarray DataArray so the first dimension is 'data_index'
-    and all other dimensions are flattened into a single second dimension
-    named 'flattened_dims'.
+# def transpose_and_flatten_data_array(da: xr.DataArray,flattened_dim_name:str = None) -> xr.DataArray:
+#     """
+#     Transposes an xarray DataArray so the first dimension is 'data_index'
+#     and all other dimensions are flattened into a single second dimension
+#     named 'flattened_dims'.
 
-    Args:
-        da (xr.DataArray): The input DataArray.
+#     Args:
+#         da (xr.DataArray): The input DataArray.
 
-    Returns:
-        xr.DataArray: The reshaped DataArray with dimensions ('data_index', 'flattened_dims').
-                      The 'flattened_dims' dimension will have a MultiIndex if multiple
-                      dimensions were stacked, preserving original coordinate information.
-    """
+#     Returns:
+#         xr.DataArray: The reshaped DataArray with dimensions ('data_index', 'flattened_dims').
+#                       The 'flattened_dims' dimension will have a MultiIndex if multiple
+#                       dimensions were stacked, preserving original coordinate information.
+#     """
 
-    # --- Handle Scalar DataArray ---
-    # If the DataArray is a scalar (no dimensions), expand it to a (1,1) array
-    # with the desired dimension names.
-    if not da.dims:
-        return da.expand_dims({'data_index': 1, 'flattened_dims': 1})
+#     # --- Handle Scalar DataArray ---
+#     # If the DataArray is a scalar (no dimensions), expand it to a (1,1) array
+#     # with the desired dimension names.
+#     if not da.dims:
+#         return da.expand_dims({'data_index': 1, 'flattened_dims': 1})
 
-    # --- Prepare Dimensions ---
-    original_dims = list(da.dims)
-    data_index_dim_name = 'data_index'
-    if flattened_dim_name is None:
-        flattened_dim_name = 'input_vars'
+#     # --- Prepare Dimensions ---
+#     original_dims = list(da.dims)
+#     data_index_dim_name = 'data_index'
+#     if flattened_dim_name is None:
+#         flattened_dim_name = 'input_vars'
 
-    # Step 1: Ensure 'data_index' is a dimension and is the first dimension.
-    if data_index_dim_name not in original_dims:
-        # If 'data_index' is not present, assume the current first dimension
-        # should be renamed to 'data_index'.
-        first_dim_original_name = original_dims[0]
-        da = da.rename({first_dim_original_name: data_index_dim_name})
-        # Update the list of original_dims to reflect the rename
-        original_dims = list(da.dims)
+#     # Step 1: Ensure 'data_index' is a dimension and is the first dimension.
+#     if data_index_dim_name not in original_dims:
+#         # If 'data_index' is not present, assume the current first dimension
+#         # should be renamed to 'data_index'.
+#         first_dim_original_name = original_dims[0]
+#         da = da.rename({first_dim_original_name: data_index_dim_name})
+#         # Update the list of original_dims to reflect the rename
+#         original_dims = list(da.dims)
     
-    # Now, 'data_index' is guaranteed to be a dimension in `da`.
-    # Ensure 'data_index' is the very first dimension.
-    if da.dims[0] != data_index_dim_name:
-        # Use .transpose() to move 'data_index' to the first position,
-        # keeping the relative order of other dimensions.
-        da = da.transpose(data_index_dim_name, *[d for d in da.dims if d != data_index_dim_name])
+#     # Now, 'data_index' is guaranteed to be a dimension in `da`.
+#     # Ensure 'data_index' is the very first dimension.
+#     if da.dims[0] != data_index_dim_name:
+#         # Use .transpose() to move 'data_index' to the first position,
+#         # keeping the relative order of other dimensions.
+#         da = da.transpose(data_index_dim_name, *[d for d in da.dims if d != data_index_dim_name])
 
-    # --- Flatten Other Dimensions ---
-    # Identify all dimensions that are NOT 'data_index'. These will be flattened.
-    dims_to_flatten = [d for d in da.dims if d != data_index_dim_name]
+#     # --- Flatten Other Dimensions ---
+#     # Identify all dimensions that are NOT 'data_index'. These will be flattened.
+#     dims_to_flatten = [d for d in da.dims if d != data_index_dim_name]
 
-    if not dims_to_flatten:
-        # If there are no other dimensions (e.g., the original array was already
-        # just ('data_index',)), we need to add a 'flattened_dims' dimension
-        # of size 1 to achieve the target 2D structure.
-        # We use axis=1 to add it as the second dimension.
-        return da.expand_dims(flattened_dim_name, axis=1)
+#     if not dims_to_flatten:
+#         # If there are no other dimensions (e.g., the original array was already
+#         # just ('data_index',)), we need to add a 'flattened_dims' dimension
+#         # of size 1 to achieve the target 2D structure.
+#         # We use axis=1 to add it as the second dimension.
+#         return da.expand_dims(flattened_dim_name, axis=1)
 
-    # Use .stack() to combine the identified dimensions into a single new dimension.
-    # xarray's .stack() method automatically creates a MultiIndex for the new dimension,
-    # which is excellent for preserving the original coordinate information.
-    # The new stacked dimension will be added as the last dimension by default.
-    # Since 'data_index' was already moved to the first position, the final order
-    # will be (data_index, flattened_dims), which is the desired outcome.
-    stacked_da = da.stack({flattened_dim_name: dims_to_flatten})
+#     # Use .stack() to combine the identified dimensions into a single new dimension.
+#     # xarray's .stack() method automatically creates a MultiIndex for the new dimension,
+#     # which is excellent for preserving the original coordinate information.
+#     # The new stacked dimension will be added as the last dimension by default.
+#     # Since 'data_index' was already moved to the first position, the final order
+#     # will be (data_index, flattened_dims), which is the desired outcome.
+#     stacked_da = da.stack({flattened_dim_name: dims_to_flatten})
 
-    return stacked_da
+#     return stacked_da
 
 def trainer(rank, conf, trial=False):
     device = torch.device(f"cuda:{rank % torch.cuda.device_count()}") if torch.cuda.is_available() else torch.device("cpu")
@@ -121,26 +122,36 @@ def trainer(rank, conf, trial=False):
 
     # ds = train_ds
 
-    input_lst = []
-    input_str_lst = []
-    for var in conf['data']['wavelength_inputs']:
-        for wl in conf['data']['wavelength_inputs'][var]['wavelength_lst']:
-            input_lst.append(transpose_and_flatten_data_array(ds[var].sel(wavelength=wl)))
-            input_str_lst.append(var+f"_{int(wl*1e9)}")
-    for var in conf['data']['input_cols']:
-        input_lst.append(transpose_and_flatten_data_array(ds[var],flattened_dim_name='input_vars'))
-        input_str_lst.append(var)
+    # input_lst = []
+    # input_str_lst = []
+    # for var in conf['data']['wavelength_inputs']:
+    #     for wl_idx, wl in enumerate(conf['data']['wavelength_inputs'][var]['wavelength_lst']):
+    #         data_idx_dct = {'wavelength':wl,}
+    #         if 'real_index_lst' in conf['data']['wavelength_inputs'][var]:
+    #             data_idx_dct['real_index_refraction'] = conf['data']['wavelength_inputs'][var]['real_index_lst'][wl_idx]
+    #         if 'imag_index_lst' in conf['data']['wavelength_inputs'][var]:
+    #             data_idx_dct['imag_index_refraction'] = conf['data']['wavelength_inputs'][var]['imag_index_lst'][wl_idx]
+    #         # data_idx_dct['method'] = 'nearest'
+    #         # print(data_idx_dct)
+    #         input_lst.append(transpose_and_flatten_data_array(ds[var].sel(indexers=data_idx_dct)))
+    #         # input_lst.append(transpose_and_flatten_data_array(ds[var].sel(**data_idx_dct)))
+    #         input_str_lst.append(var+f"_{int(wl*1e9)}")
+    # for var in conf['data']['input_cols']:
+    #     input_lst.append(transpose_and_flatten_data_array(ds[var],flattened_dim_name='input_vars'))
+    #     input_str_lst.append(var)
 
-    # train_input_arr = xr.concat(input_lst,'input_vars')
-    train_input_arr = xr.concat(input_lst,pd.Index(input_str_lst,name='input_vars'))
+    # # train_input_arr = xr.concat(input_lst,'input_vars')
+    # train_input_arr = xr.concat(input_lst,pd.Index(input_str_lst,name='input_vars'))
 
-    output_lst = []
-    output_str_lst = []
-    for var in conf['data']['output_cols']:
-        output_lst.append(transpose_and_flatten_data_array(ds[var],flattened_dim_name='label_vars'))
-        output_str_lst.append(var)
+    # output_lst = []
+    # output_str_lst = []
+    # for var in conf['data']['output_cols']:
+    #     output_lst.append(transpose_and_flatten_data_array(ds[var],flattened_dim_name='label_vars'))
+    #     output_str_lst.append(var)
 
-    train_label_arr = xr.concat(output_lst,pd.Index(conf['data']['output_cols'],name='label_vars'))
+    # train_label_arr = xr.concat(output_lst,pd.Index(conf['data']['output_cols'],name='label_vars'))
+
+    train_input_arr, train_label_arr, input_str_lst, output_str_lst = data.build_training_array(ds,conf)
 
     x_scaler = evid_nn.rescale(0,1,axes=(0,))
     y_scaler = evid_nn.rescale(0,1,axes=(0,))
@@ -159,27 +170,35 @@ def trainer(rank, conf, trial=False):
 
     try:
         valid_ds = xr.open_dataset(os.path.join(conf['data']['valid_data_path'],conf['data']['valid_data_file']))
-        input_lst = []
-        # input_str_lst = []
-        for var in conf['data']['wavelength_inputs']:
-            for wl in conf['data']['wavelength_inputs'][var]['wavelength_lst']:
-                input_lst.append(transpose_and_flatten_data_array(valid_ds[var].sel(wavelength=wl)))
-                # input_str_lst.append(var+f"_{int(wl*1e9)}")
-        for var in conf['data']['input_cols']:
-            input_lst.append(transpose_and_flatten_data_array(valid_ds[var],flattened_dim_name='input_vars'))
-            # input_str_lst.append(var)
+        # input_lst = []
+        # # input_str_lst = []
+        # for var in conf['data']['wavelength_inputs']:
+        #     for wl_idx, wl in enumerate(conf['data']['wavelength_inputs'][var]['wavelength_lst']):
+        #         data_idx_dct = {'wavelength':wl}
+        #         if 'real_index_lst' in conf['data']['wavelength_inputs'][var]:
+        #             data_idx_dct['real_index_refraction'] = conf['data']['wavelength_inputs'][var]['real_index_lst'][wl_idx]
+        #         if 'imag_index_lst' in conf['data']['wavelength_inputs'][var]:
+        #             data_idx_dct['imag_index_refraction'] = conf['data']['wavelength_inputs'][var]['imag_index_lst'][wl_idx]
+        #         # print(data_idx_dct)
+        #         # data_idx_dct['method'] = 'nearest'
+        #         input_lst.append(transpose_and_flatten_data_array(valid_ds[var].sel(indexers=data_idx_dct)))
+        #         # input_lst.append(transpose_and_flatten_data_array(valid_ds[var].sel(**data_idx_dct)))
+        #         # input_str_lst.append(var+f"_{int(wl*1e9)}")
+        # for var in conf['data']['input_cols']:
+        #     input_lst.append(transpose_and_flatten_data_array(valid_ds[var],flattened_dim_name='input_vars'))
+        #     # input_str_lst.append(var)
 
-        # train_input_arr = xr.concat(input_lst,'input_vars')
-        valid_input_arr = xr.concat(input_lst,pd.Index(input_str_lst,name='input_vars'))
+        # # train_input_arr = xr.concat(input_lst,'input_vars')
+        # valid_input_arr = xr.concat(input_lst,pd.Index(input_str_lst,name='input_vars'))
 
-        output_lst = []
-        # output_str_lst = []
-        for var in conf['data']['output_cols']:
-            output_lst.append(transpose_and_flatten_data_array(valid_ds[var],flattened_dim_name='label_vars'))
-            # output_str_lst.append(var)
+        # output_lst = []
+        # # output_str_lst = []
+        # for var in conf['data']['output_cols']:
+        #     output_lst.append(transpose_and_flatten_data_array(valid_ds[var],flattened_dim_name='label_vars'))
+        #     # output_str_lst.append(var)
 
-        valid_label_arr = xr.concat(output_lst,pd.Index(conf['data']['output_cols'],name='label_vars'))
-        
+        # valid_label_arr = xr.concat(output_lst,pd.Index(conf['data']['output_cols'],name='label_vars'))
+        valid_input_arr, valid_label_arr, _, _ = data.build_training_array(valid_ds,conf)
         x_train = x_scaler.scale(np.log(train_input_arr.values))
         x_valid = x_scaler.scale(np.log(valid_input_arr.values))
         

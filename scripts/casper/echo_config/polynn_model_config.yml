@@ -1,20 +1,29 @@
 
-save_loc: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/bs_ext_3wl_351/"
+save_loc: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/beta1_alpha1_532_r_eff_all_index/"
 
 data:
   data_path: "/glade/derecho/scratch/mhayman/aerosol/datasets/"  
-  data_file: "hippo_aerosol_training_data_train.nc"
+  data_file: "hippo_aerosol_index_training_data_train.nc"
   valid_data_path: "/glade/derecho/scratch/mhayman/aerosol/datasets/"
-  valid_data_file: "hippo_aerosol_training_data_valid.nc"
+  valid_data_file: "hippo_aerosol_index_training_data_valid.nc"
   test_data_path: "/glade/derecho/scratch/mhayman/aerosol/datasets/"
-  test_data_file: "hippo_aerosol_training_data_test.nc"
+  test_data_file: "hippo_aerosol_index_training_data_test.nc"
+  
+  # input data is flattened across multiple of these dimensions
+  # TODO need to make sure the labels align to these dimensions as well
+  flatten_to_multiple_points: ['real_index_refraction','imag_index_refraction',]
   wavelength_inputs:
     backscatter_coefficient:
-      wavelength_lst: [1064.0e-9, 532.0e-9, 355.0e-9] # [1064.0e-9, 532.0e-9, 355.0e-9]
+      wavelength_lst: [355.0e-9, 532.0e-9,] # [1064.0e-9, 710.0e-9, 800.0e-9, 532.0e-9, 400.0e-9, 355.0e-9,]
+      # real_index_lst: [1.5, 1.5, 1.5,]
+      # imag_index_lst: [0.02, 0.02, 0.02,]
     extinction_coefficient:
-      wavelength_lst: [1064.0e-9, 532.0e-9, 355.0e-9] # [1064.0e-9, 532.0e-9, 355.0e-9]
+      wavelength_lst: [355.0e-9, 532.0e-9] # [1064.0e-9, 532.0e-9, 355.0e-9]
+      # real_index_lst: [1.5, 1.5,]
+      # imag_index_lst: [0.02, 0.02,]
+
   input_cols: []
-  output_cols: ['number_concentration', 'mean_r']
+  output_cols: ['number_concentration', 'effective_r']
   train_fraction: 0.7
   valid_fraction: 0.25
   test_fraction: 0.05
