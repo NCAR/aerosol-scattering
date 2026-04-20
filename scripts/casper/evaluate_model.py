@@ -41,11 +41,14 @@ import data
 save_path = '/glade/derecho/scratch/mhayman/aerosol_poly_nn/output_analysis/'
 
 model_str_lst = [
-    "20260310T065310",  # 6 beta, 2 alpha all refractive indices
-    # "20260311T110300",  # 3 beta, 2 alpha all refractive indices
+    # "20260310T065310",  # 6 beta, 2 alpha all refractive indices
+    "20260311T110300",  # 3 beta, 2 alpha all refractive indices
     # "20260324T070054",  # 1 beta, 1 alpha 355 nm, all refractive indices
     # "20260327T080000",  # 1 beta, 1 alpha 532 nm, all refractive indices
 ]
+batch_size = 256
+ensemble_size = 25
+ensemble_width = 0.20 # (observation uncertainty in fraction.  e.g. 0.05 is 5% error)
 
 is_cuda = torch.cuda.is_available()
 device = torch.device(torch.cuda.current_device()) if is_cuda else torch.device("cpu")
@@ -410,9 +413,9 @@ for m_idx, model_str in enumerate(model_str_lst):
 
     ### perform aggregate analysis ###
 
-    batch_size = 256
-    ensemble_size = 25
-    ensemble_width = 0.10 # (observation uncertainty in fraction.  e.g. 0.05 is 5% error)
+    # batch_size = 256
+    # ensemble_size = 25
+    # ensemble_width = 0.10 # (observation uncertainty in fraction.  e.g. 0.05 is 5% error)
     batch_count = in_data.shape[0]//batch_size # hardcoded for testing
     
     r_centroid_lst = []
