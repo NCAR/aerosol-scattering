@@ -34,3 +34,20 @@ then submit a job using
 ```
 qsub scripts/casper/pbs/run_gpu_model_eval
 ```
+
+
+# Transfer to linux share
+Transfer post analysis:
+```
+rsync -avh -e ssh /glade/derecho/scratch/mhayman/aerosol_poly_nn/output_analysis/ mhayman@gurgle.eol.ucar.edu:/scr/tmp/mhayman/aerosol_poly_nn/output_analysis/
+```
+
+Tranfer model
+```
+rsync -avh -e ssh $HOME/Python/aerosol-scattering/models/ mhayman@gurgle.eol.ucar.edu:/scr/tmp/mhayman/aerosol_poly_nn/models/
+```
+
+Training data
+```
+rsync -avh -e ssh /glade/derecho/scratch/mhayman/aerosol/datasets/  mhayman@gurgle.eol.ucar.edu:/scr/tmp/mhayman/aerosol_poly_nn/datasets/
+```
