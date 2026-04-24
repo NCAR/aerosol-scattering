@@ -8,7 +8,7 @@
 ### Merge output and error files
 #PBS -j oe
 ### Select 1 node with 1 CPU and a v100 GPU
-#PBS -l select=4:ngpus=1:mem=128GB:gpu_type=v100
+#PBS -l select=1:ngpus=1:mem=128GB:gpu_type=v100
 ### Specify mail recipient
 ### PBS -M mhayman@ucar.edu
         
