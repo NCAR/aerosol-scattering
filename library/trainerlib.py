@@ -63,6 +63,8 @@ class Trainer:
 
         results_dict = defaultdict(list)
 
+        input_noise_tnsr = conf['data']['training_input_noise']
+
         # # update the learning rate if epoch-by-epoch updates that dont depend on a metric
         # if conf['trainer']['use_scheduler'] and conf['trainer']['scheduler']['scheduler_type'] == "lambda":
         #     scheduler.step()
@@ -86,11 +88,12 @@ class Trainer:
             for _ in range(grad_accum_every):
 
                 x, label_data = next(dl)
+                x_noise = torch.randn(x.shape, device = x.device, dtype = x.dtype)*input_noise_tnsr
 
                 with autocast(enabled=amp):
                     # (x,label_data) in enumerate(valid_loader):
                     # (x,label_data) = next(iter(valid_dataloader))
-                    y_pred = self.model(x,label_data)
+                    y_pred = self.model(x+x_noise,label_data)
 
                 
 
@@ -183,6 +186,8 @@ class Trainer:
 
         self.model.eval()
 
+        input_noise_tnsr = conf['data']['training_input_noise']
+
         valid_batches_per_epoch = conf['trainer']['valid_batches_per_epoch']
         # distributed = True if conf["trainer"]["mode"] in ["fsdp", "ddp"] else False
         distributed = False
@@ -201,7 +206,8 @@ class Trainer:
         with torch.no_grad():
             for k, (x,label_data) in enumerate(valid_loader):
                 # (x,label_data) = next(iter(valid_dataloader))
-                y_pred = self.model(x,label_data)
+                x_noise = torch.randn(x.shape, device = x.device, dtype = x.dtype)*input_noise_tnsr
+                y_pred = self.model(x+x_noise,label_data)
 
                 
 

@@ -161,6 +161,7 @@ def build_training_array(ds, conf):
 
     input_lst = []
     input_str_lst = []
+    input_uncert_frac_lst = []
     
     # --- Process Wavelength Inputs ---
     for var in conf['data']['wavelength_inputs']:
@@ -177,11 +178,18 @@ def build_training_array(ds, conf):
                     data_idx_dct['real_index_refraction'] = conf['data']['wavelength_inputs'][var]['real_index_lst'][wl_idx]
                 if 'imag_index_lst' in conf['data']['wavelength_inputs'][var]:
                     data_idx_dct['imag_index_refraction'] = conf['data']['wavelength_inputs'][var]['imag_index_lst'][wl_idx]
+            
+            # load the amount of noise to inject in the training inputs
+            if 'train_noise_frac' in conf['data']['wavelength_inputs'][var]:
+                input_frac_uncertainty = conf['data']['wavelength_inputs'][var]['train_noise_frac'][wl_idx]
+            else:
+                input_frac_uncertainty = 0.0
                 
                 da = ds[var].sel(indexers=data_idx_dct)
                 input_lst.append(transpose_and_flatten_data_array(da, flattened_dim_name='input_vars'))
             
             input_str_lst.append(var + f"_{int(wl*1e9)}")
+            input_uncert_frac_lst.append(input_frac_uncertainty)
             
     # --- Process Additional Input Columns ---
     for var in conf['data']['input_cols']:
@@ -203,7 +211,7 @@ def build_training_array(ds, conf):
 
     train_label_arr = xr.concat(output_lst, pd.Index(conf['data']['output_cols'], name='label_vars'))
 
-    return train_input_arr, train_label_arr, input_str_lst, output_str_lst
+    return train_input_arr, train_label_arr, input_str_lst, output_str_lst, input_uncert_frac_lst
 
 
 # def build_training_array(ds,conf):

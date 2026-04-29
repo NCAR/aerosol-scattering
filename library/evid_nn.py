@@ -416,6 +416,10 @@ def save_poly_nn_model(model,path=None,
     if output_str_lst is not None:
         save_dct['save_model']['output_str_lst'] = output_str_lst
 
+    if 'training_input_noise' in conf['data']:
+        if isinstance(conf['data']['training_input_noise'],np.ndarray) or torch.is_tensor(conf['data']['training_input_noise']):
+            save_dct['data']['training_input_noise'] = conf['data']['training_input_noise'].tolist()
+
 
     save_dct['save_model']['x_scaler'] = {}
     if x_scaler is None:

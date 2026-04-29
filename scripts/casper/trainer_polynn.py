@@ -151,13 +151,25 @@ def trainer(rank, conf, trial=False):
 
     # train_label_arr = xr.concat(output_lst,pd.Index(conf['data']['output_cols'],name='label_vars'))
 
-    train_input_arr, train_label_arr, input_str_lst, output_str_lst = data.build_training_array(ds,conf)
+    train_input_arr, train_label_arr, input_str_lst, output_str_lst, input_frac_uncertainty = data.build_training_array(ds,conf)
 
     x_scaler = evid_nn.rescale(0,1,axes=(0,))
     y_scaler = evid_nn.rescale(0,1,axes=(0,))
 
     x_scaler.set_scale(np.log(train_input_arr.values))
     y_scaler.set_scale(np.log(train_label_arr.values))
+
+    # TODO set the noise scale for the inputs and store it in the config
+    training_input_noise = np.log10(1+np.array(input_frac_uncertainty)[np.newaxis,:])/x_scaler.gain 
+    # print(training_input_noise)
+    # print(training_input_noise.shape)
+    # print(training_input_noise)
+    # if np.sum(np.isnan(training_input_noise)) > 0:
+    #     print("Found Nan in noise:")
+    #     print(training_input_noise)
+    #     print(input_frac_uncertainty)
+    #     raise ValueError
+    conf['data']['training_input_noise'] = torch.tensor(training_input_noise,dtype=dtype,device=device)
 
     # x_train = x_scaler.scale(np.log(train_input_arr.values[:train_idx,:]))
     # x_valid = x_scaler.scale(np.log(train_input_arr.values[train_idx:valid_idx,:]))
@@ -198,7 +210,7 @@ def trainer(rank, conf, trial=False):
         #     # output_str_lst.append(var)
 
         # valid_label_arr = xr.concat(output_lst,pd.Index(conf['data']['output_cols'],name='label_vars'))
-        valid_input_arr, valid_label_arr, _, _ = data.build_training_array(valid_ds,conf)
+        valid_input_arr, valid_label_arr, _, _, _ = data.build_training_array(valid_ds,conf)
         x_train = x_scaler.scale(np.log(train_input_arr.values))
         x_valid = x_scaler.scale(np.log(valid_input_arr.values))
         
