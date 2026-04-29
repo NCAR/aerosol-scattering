@@ -51,3 +51,8 @@ Training data
 ```
 rsync -avh -e ssh /glade/derecho/scratch/mhayman/aerosol/datasets/  mhayman@gurgle.eol.ucar.edu:/scr/tmp/mhayman/aerosol_poly_nn/datasets/
 ```
+
+Moving everything to `eol- breeze`
+```
+rsync -avh -e -r /scr/tmp/mhayman/aerosol_poly_nn/ /export/breeze1/mhayman/aerosol_poly_nn/
+```

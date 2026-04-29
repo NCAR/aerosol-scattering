@@ -42,13 +42,15 @@ save_path = '/glade/derecho/scratch/mhayman/aerosol_poly_nn/output_analysis/'
 
 model_str_lst = [
     # "20260310T065310",  # 6 beta, 2 alpha all refractive indices
-    "20260311T110300",  # 3 beta, 2 alpha all refractive indices
+    # "20260311T110300",  # 3 beta, 2 alpha all refractive indices
+    "20260429T081154",  # 3 beta, 2 alpha all refractive indices with 30% input error
     # "20260324T070054",  # 1 beta, 1 alpha 355 nm, all refractive indices
     # "20260327T080000",  # 1 beta, 1 alpha 532 nm, all refractive indices
 ]
 batch_size = 256
 ensemble_size = 25
-ensemble_width = 0.20 # (observation uncertainty in fraction.  e.g. 0.05 is 5% error)
+ensemble_width = 0.10 # (observation uncertainty in fraction.  e.g. 0.05 is 5% error)
+override_input_uncertainty = True # if set to True, don't inject noise directly in input data (save it for the ensemble analysis)
 
 is_cuda = torch.cuda.is_available()
 device = torch.device(torch.cuda.current_device()) if is_cuda else torch.device("cpu")
@@ -266,12 +268,18 @@ for m_idx, model_str in enumerate(model_str_lst):
     # valid_idx = train_idx+int(np.round(ds.sizes['data_index']*conf['data']['valid_fraction']))
     # test_idx = train_idx+int(np.round(ds.sizes['data_index']*conf['data']['test_fraction']))
     
-    train_input_arr, train_label_arr, input_str_lst, output_str_lst = data.build_training_array(ds,conf)
+    train_input_arr, train_label_arr, input_str_lst, output_str_lst, input_frac_uncertainty = data.build_training_array(ds,conf)
+
+    
+    training_input_noise = np.log10(1+np.array(input_frac_uncertainty)[np.newaxis,:])/x_scaler.gain 
+    if override_input_uncertainty:
+        training_input_noise = training_input_noise*0.0
+    conf['data']['training_input_noise'] = torch.tensor(training_input_noise,dtype=dtype,device=device)
     
     if not override_validation:
         valid_ds = xr.open_dataset(os.path.join(conf['data']['valid_data_path'],conf['data']['valid_data_file']))
         
-        valid_input_arr, valid_label_arr, _, _ = data.build_training_array(valid_ds,conf)
+        valid_input_arr, valid_label_arr, _, _, _ = data.build_training_array(valid_ds,conf)
         
         x_train = x_scaler.scale(np.log(train_input_arr.values))
         x_valid = x_scaler.scale(np.log(valid_input_arr.values))
@@ -310,7 +318,7 @@ for m_idx, model_str in enumerate(model_str_lst):
 
     test_ds = xr.open_dataset(test_data_file)
     
-    test_input_arr, test_label_arr, _, _ = data.build_training_array(test_ds,conf)
+    test_input_arr, test_label_arr, _, _, _ = data.build_training_array(test_ds,conf)
     
     x_test = x_scaler.scale(np.log(test_input_arr.values))
     
@@ -518,6 +526,8 @@ for m_idx, model_str in enumerate(model_str_lst):
     save_aggr_ds.attrs['model'] = model_str
     save_aggr_ds.attrs['sample_interval']= sample_interval
     save_aggr_ds.attrs['file_creation_date'] = current_time_str
+    save_aggr_ds.attrs['inputs'] = ', '.join(input_str_lst)
+    save_aggr_ds.attrs['ouputs'] = ', '.join(output_str_lst)
 
     save_aggr_ds['r_centroid'] = xr.DataArray(r_centroid_arr_lst[-1],dims=('data_index',),
                                               attrs={'description':'centroid of effective radius of PDF'})
