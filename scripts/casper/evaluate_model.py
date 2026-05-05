@@ -43,13 +43,14 @@ save_path = '/glade/derecho/scratch/mhayman/aerosol_poly_nn/output_analysis/'
 model_str_lst = [
     # "20260310T065310",  # 6 beta, 2 alpha all refractive indices
     # "20260311T110300",  # 3 beta, 2 alpha all refractive indices
-    "20260429T081154",  # 3 beta, 2 alpha all refractive indices with 30% input error
+    # "20260429T081154",  # 3 beta, 2 alpha all refractive indices with 30% input error
     # "20260324T070054",  # 1 beta, 1 alpha 355 nm, all refractive indices
+    "20260501T064012",  # 1 beta, 1 alpha 355 nm, all refractive indices with 30% input error
     # "20260327T080000",  # 1 beta, 1 alpha 532 nm, all refractive indices
 ]
 batch_size = 256
 ensemble_size = 25
-ensemble_width = 0.10 # (observation uncertainty in fraction.  e.g. 0.05 is 5% error)
+ensemble_width = 0.50 # (observation uncertainty in fraction.  e.g. 0.05 is 5% error)
 override_input_uncertainty = True # if set to True, don't inject noise directly in input data (save it for the ensemble analysis)
 
 is_cuda = torch.cuda.is_available()
