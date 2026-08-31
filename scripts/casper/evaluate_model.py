@@ -45,8 +45,9 @@ model_str_lst = [
     # "20260311T110300",  # 3 beta, 2 alpha all refractive indices
     # "20260429T081154",  # 3 beta, 2 alpha all refractive indices with 30% input error
     # "20260324T070054",  # 1 beta, 1 alpha 355 nm, all refractive indices
-    "20260501T064012",  # 1 beta, 1 alpha 355 nm, all refractive indices with 30% input error
+    # "20260501T064012",  # 1 beta, 1 alpha 355 nm, all refractive indices with 30% input error
     # "20260327T080000",  # 1 beta, 1 alpha 532 nm, all refractive indices
+    "20260507T072534",  # 3 beta, 0 alpha, all refractive indices
 ]
 batch_size = 256
 ensemble_size = 25

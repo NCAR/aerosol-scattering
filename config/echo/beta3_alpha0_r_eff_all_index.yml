@@ -1,0 +1,57 @@
+data:
+  batch_size: 1017
+  cond_args:
+    in_bias_arr: 0
+    in_norm_arr: 1
+    out_bias_arr: 0
+    out_norm_arr: 1
+  data_file: hippo_aerosol_index_training_data_train.nc
+  data_path: /glade/derecho/scratch/mhayman/aerosol/datasets/
+  flatten_to_multiple_points:
+  - real_index_refraction
+  - imag_index_refraction
+  input_cols: []
+  output_cols:
+  - number_concentration
+  - effective_r
+  test_data_file: hippo_aerosol_index_training_data_test.nc
+  test_data_path: /glade/derecho/scratch/mhayman/aerosol/datasets/
+  test_fraction: 0.05
+  train_fraction: 0.7
+  valid_data_file: hippo_aerosol_index_training_data_valid.nc
+  valid_data_path: /glade/derecho/scratch/mhayman/aerosol/datasets/
+  valid_fraction: 0.25
+  wavelength_inputs:
+    backscatter_coefficient:
+      train_noise_frac:
+      - 0.0
+      - 0.0
+      - 0.0
+      wavelength_lst:
+      - 1.064e-06
+      - 5.32e-07
+      - 3.55e-07
+    extinction_coefficient:
+      train_noise_frac: []
+      wavelength_lst: []
+model:
+  dtype: float64
+  int_count: 1000
+  layer_count: 4
+  layer_nodes: 3438
+  polynomial_order_1: 16
+  polynomial_order_2: 32
+save_loc: /glade/derecho/scratch/mhayman/aerosol_poly_nn/beta3_alpha0_r_eff_all_index/
+trainer:
+  amp: false
+  batches_per_epoch: 512
+  grad_accum_every: 1
+  learning_rate: 0.00010071954811722066
+  max_epochs: 50
+  scheduler:
+    factor: 0.1
+    min_lr: 1.0e-08
+    patience: 2
+    threshold: 0.00013103872009131908
+  stopping_patience: 3
+  valid_batches_per_epoch: 256

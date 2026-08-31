@@ -15,4 +15,4 @@ echo-opt scripts/casper/echo_config/cached_hyper.yml scripts/casper/echo_config/
 # conda activate holodec
 # echo-report cached_hyper.yml -m polynn_model_config.yml 
 
-# cp best.yml ~/Python/aerosol-scattering/config/echo/beta1_alpha1_355_30perror_r_eff_all_index.yml
+# cp best.yml ~/Python/aerosol-scattering/config/echo/beta3_alpha0_r_eff_all_index.yml

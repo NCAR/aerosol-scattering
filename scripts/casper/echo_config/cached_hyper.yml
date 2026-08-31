@@ -1,6 +1,6 @@
 log: True
-save_path: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/beta1_alpha1_355_30perror_r_eff_all_index/"
-notes: "355 nm only with 30 percent error in the training process.  Estimating effective radius and number density.  Data has index of refraction ranging from [1.3-1.5]+i[0-0.6]"
+save_path: "/glade/derecho/scratch/mhayman/aerosol_poly_nn/beta3_alpha0_r_eff_all_index/"
+notes: "1064, 532 and 355 backscatter only with 0 percent error in the training process.  Estimating effective radius and number density.  Data has index of refraction ranging from [1.3-1.5]+i[0-0.6]"
 
 pbs:
   jobs: 12
