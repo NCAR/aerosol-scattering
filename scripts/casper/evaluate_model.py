@@ -273,7 +273,7 @@ for m_idx, model_str in enumerate(model_str_lst):
     train_input_arr, train_label_arr, input_str_lst, output_str_lst, input_frac_uncertainty = data.build_training_array(ds,conf)
 
     
-    training_input_noise = np.log10(1+np.array(input_frac_uncertainty)[np.newaxis,:])/x_scaler.gain 
+    training_input_noise = np.log(1+np.array(input_frac_uncertainty)[np.newaxis,:])/x_scaler.gain 
     if override_input_uncertainty:
         training_input_noise = training_input_noise*0.0
     conf['data']['training_input_noise'] = torch.tensor(training_input_noise,dtype=dtype,device=device)
@@ -477,7 +477,7 @@ for m_idx, model_str in enumerate(model_str_lst):
             # for ensemble analysis (which will slow things down
             # ensemble_size = 100
             # ensemble_width = 0.05 # (observation uncertainty in fraction.  e.g. 0.05 is 5% error)
-            hist_width_arr = torch.tensor(np.log10(1+ensemble_width)/x_scaler.gain,dtype=dtype,device=device)
+            hist_width_arr = torch.tensor(np.log(1+ensemble_width)/x_scaler.gain,dtype=dtype,device=device)
             # loop_length = 4
             # f_pdf_ens = np.zeros((f_pdf_tnsr.shape[1],f_pdf_tnsr.shape[2]))
             f_pdf_ens = torch.zeros(f_pdf_tnsr.shape,dtype=dtype,device=device)

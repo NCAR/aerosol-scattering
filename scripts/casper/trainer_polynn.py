@@ -160,7 +160,7 @@ def trainer(rank, conf, trial=False):
     y_scaler.set_scale(np.log(train_label_arr.values))
 
     # TODO set the noise scale for the inputs and store it in the config
-    training_input_noise = np.log10(1+np.array(input_frac_uncertainty)[np.newaxis,:])/x_scaler.gain 
+    training_input_noise = np.log(1+np.array(input_frac_uncertainty)[np.newaxis,:])/x_scaler.gain 
     # print(training_input_noise)
     # print(training_input_noise.shape)
     # print(training_input_noise)
