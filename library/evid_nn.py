@@ -510,6 +510,6 @@ def load_poly_nn_model(time_str,name_str="",path=None,dtype=None,device=None):
                                 dtype=dtype,device=device,
                                 int_count=save_dct['model']['int_count'])
     
-    model.load_state_dict(torch.load(os.path.join(path,save_model_file)))
+    model.load_state_dict(torch.load(os.path.join(path,save_model_file),map_location=device))
     model.eval()
     return save_dct, model
